@@ -6,9 +6,9 @@
 #![no_main]
 
 
-fn main() {
+//!fn main() {
     //println!("Hello, Guo!");
-}
+//!}
 
 
 
