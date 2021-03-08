@@ -11,7 +11,16 @@
 //!
 //! 内嵌整个汇编文件
 #![feature(global_asm)]
+//!
+//!
+#![feature(panic_info_message)]
+//!
 
+
+#[macro_use]
+mod console;
+mod panic;
+mod sbi;
 
 
     // ***********************************************************************
@@ -32,22 +41,17 @@ global_asm!(include_str!("entry.asm"));
 
 
 
-
-use core::panic::PanicInfo;
-    // ***********************************************************************
-    // panic发生是调用(程序错误被迫停止或捕获机制处理)
-    // Diverging Function "never"type
-    // core donot need OS
-    //
-#[panic_handler]
-fn panic(_info: &PanicInfo) -> !{
-    loop{}
-}
-    // ***********************************************************************
-
-
-
-
+/*  use core::panic::PanicInfo;
+        // ***********************************************************************
+        // panic发生是调用(程序错误被迫停止或捕获机制处理)
+        // Diverging Function "never"type
+        // core donot need OS
+        //
+    #[panic_handler]
+    fn panic(_info: &PanicInfo) -> !{
+        loop{}
+    }
+        // ***********************************************************************
 
     // ***********************************************************************
     // Make a test function to print on the screen
@@ -68,7 +72,7 @@ pub fn console_putchar(ch: u8) {
     }
 }
     // ***********************************************************************
-
+*/
 
 
 
@@ -86,16 +90,22 @@ pub fn console_putchar(ch: u8) {
     //}
     // ***********************************************************************
     //
+    //
+    //
 #[no_mangle]
     // Rust entry function
     // _start进行了一系列准备后，这是第一个被调用的rust函数
+    //
 pub extern "C" fn rust_main() -> !{
-    console_putchar(b'O');
-    console_putchar(b'K');
-    console_putchar(b'K');
-    console_putchar(b'\n');
+//   console_putchar(b'O');
+//    console_putchar(b'K');
+//    console_putchar(b'K');
+//    console_putchar(b'\n');
+//    loop{}
+//s
+    println!("Hello Guo-lab!");
+    panic!("rust_main END");
 
-    loop{}
 }
 
 
