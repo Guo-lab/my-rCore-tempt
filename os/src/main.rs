@@ -21,7 +21,8 @@
 mod console;
 mod panic;
 mod sbi;
-
+// 中断模块
+mod interrupt;
 
     // ***********************************************************************
     //fn main() {
@@ -91,20 +92,30 @@ pub fn console_putchar(ch: u8) {
     // ***********************************************************************
     //
     //
-    //
-#[no_mangle]
+    //    
     // Rust entry function
     // _start进行了一系列准备后，这是第一个被调用的rust函数
     //
+#[no_mangle]
 pub extern "C" fn rust_main() -> !{
-//   console_putchar(b'O');
-//    console_putchar(b'K');
-//    console_putchar(b'K');
-//    console_putchar(b'\n');
-//    loop{}
-//s
-    println!("Hello Guo-lab!");
-    panic!("rust_main END");
+  /* console_putchar(b'O');
+     console_putchar(b'K');
+     console_putchar(b'K');
+     console_putchar(b'\n');
+       loop{}
+    */
+//    println!("Hello Guo-lab!");
+//
+    //  初始化各种模块
+    interrupt::init();
+
+    unsafe {
+        llvm_asm!("ebreak"::::"volatile");
+    };
+
+    unreachable!();
+
+//    panic!("rust_main END");
 
 }
 

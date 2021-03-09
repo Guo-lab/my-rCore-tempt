@@ -1,4 +1,4 @@
-use riscv::register::{sstatus::sStatus, scause::Scause};
+use riscv::register::{sstatus::Sstatus, scause::Scause};
 
 
 // *****************************************************************************
