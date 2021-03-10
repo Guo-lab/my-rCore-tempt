@@ -23,4 +23,7 @@ panic = "abort"
 
 
 [dependencies]
+# interrupt/Context 时添加依赖
 riscv = { git = "https://github.com/rcore-os/riscv", features = ["inline-asm"] }
+# 动态分配内存时添加
+buddy_system_allocator = "0.7.0"

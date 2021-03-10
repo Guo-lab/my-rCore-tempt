@@ -1,3 +1,4 @@
+//! # 一些 unstable 的功能需要在 crate 层级声明后才可以使用
 //! #意味着global
 //! 禁用std
 #![no_std]
@@ -15,8 +16,20 @@
 //!
 #![feature(panic_info_message)]
 //!
+//! 2021-3-10
+//!   我们使用了一个全局动态内存分配器，以实现原本标准库中的堆内存分配。
+//!   而语言要求我们同时实现一个错误回调[panic!()]
+#![feature(alloc_error_handler)]
+//!
 
 
+
+
+
+
+
+
+//  // ***********************************************************************
 #[macro_use]
 mod console;
 mod panic;
@@ -24,21 +37,21 @@ mod sbi;
 // 中断模块
 mod interrupt;
 
-    // ***********************************************************************
-    //fn main() {
-        //println!("Hello, Guo!");
-    //}
-    // ***********************************************************************
+// 内存模块的引入 还需 memory/mod.rs 支持
+mod memory;
+extern crate alloc;
+//
 
-
+    /* ***********************************************************************
+src[]fn main() {
+        println!("Hello, Guo!");
+     }
+    *********************************************************************** */
 
     // ***********************************************************************
     // 汇编语言编写的程序入口
 global_asm!(include_str!("entry.asm"));
     // ***********************************************************************
-
-
-
 
 
 
@@ -52,7 +65,6 @@ global_asm!(include_str!("entry.asm"));
     fn panic(_info: &PanicInfo) -> !{
         loop{}
     }
-        // ***********************************************************************
 
     // ***********************************************************************
     // Make a test function to print on the screen
@@ -71,8 +83,7 @@ pub fn console_putchar(ch: u8) {
              : "volatile"
         );
     }
-}
-    // ***********************************************************************
+}// ***********************************************************************
 */
 
 
@@ -97,28 +108,62 @@ pub fn console_putchar(ch: u8) {
     // _start进行了一系列准备后，这是第一个被调用的rust函数
     //
 #[no_mangle]
-pub extern "C" fn rust_main(){
+pub extern "C" fn rust_main() -> ! {
     /* console_putchar(b'O');
        console_putchar(b'K');
        console_putchar(b'K');
        console_putchar(b'\n');
          loop{}
     */
-     println!("Hello Guo-lab!");
+   
+
+
+ 
+    println!("Hello Guo-lab!");
     //  初始化各种模块
     interrupt::init();
+    memory::init();
 
-    unsafe {
-        llvm_asm!("ebreak"::::"volatile");
-    };
-    // 2021-3-10
-    //  unreachable!();
-      loop{}
+// 测试动态内存分配
+    use alloc::boxed::Box;
+    use alloc::vec::Vec;
+    let v = Box::new(5);
+    assert_eq!(*v, 5);
+    core::mem::drop(v);
+
+    let mut vec = Vec::new();
+    for i in 0..10000 { 
+        vec.push(i);
+    }
+    assert_eq!(vec.len(), 10000);
+    for (i,value) in vec.into_iter().enumerate() {
+        assert_eq!(value,i);
+    }
+    println!("Heap Test Passed!");
+    panic!();
+// 测试动态内存分配结束
+
+// 测试中断
+//    unsafe {
+//        llvm_asm!("ebreak"::::"volatile");
+//    };
+    // *******************************************************************
+    // 2021-3-10 __tick__ (一处修改：上下文处context 添加mut FILE interrupt）
+    // // unreachable!();
+    // #################
+    // loop{}
+    // #################
     // 2021-3-10
     // 时钟中断需要在loop中进行
     // !【】Rust使用的是代数类型系统，!表示最小的类型单元，类似离散数学里的零元
     // 因此没有unreachable()!与之对应不能使用
+    // ********************************************************************
+    // 
+// 测试结束
     //  panic!("rust_main END");
+
+
+// All is over here
 }
 
 
