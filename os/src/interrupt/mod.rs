@@ -4,8 +4,11 @@
 
 mod context;
 mod handler;
+mod timer;
+// 2021-3-10
 
-pub use context::Context;
+
+// ? pub use context::Context;
 
 /// 初始化中断相关的子模块
 ///
@@ -13,5 +16,7 @@ pub use context::Context;
 /// - [`timer::init`]
 pub fn init() {
     handler::init();
+    // 2021-3-10
+    timer::init();
     println!("mod interrupt initialized");
 }

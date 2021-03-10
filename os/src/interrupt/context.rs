@@ -1,4 +1,5 @@
-use riscv::register::{sstatus::Sstatus, scause::Scause};
+use riscv::register::sstatus::Sstatus;
+// use riscv::register::scause::Scause; ? variable can not be used
 
 
 // *****************************************************************************

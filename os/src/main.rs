@@ -97,26 +97,28 @@ pub fn console_putchar(ch: u8) {
     // _start进行了一系列准备后，这是第一个被调用的rust函数
     //
 #[no_mangle]
-pub extern "C" fn rust_main() -> !{
-  /* console_putchar(b'O');
-     console_putchar(b'K');
-     console_putchar(b'K');
-     console_putchar(b'\n');
-       loop{}
+pub extern "C" fn rust_main(){
+    /* console_putchar(b'O');
+       console_putchar(b'K');
+       console_putchar(b'K');
+       console_putchar(b'\n');
+         loop{}
     */
-//    println!("Hello Guo-lab!");
-//
+     println!("Hello Guo-lab!");
     //  初始化各种模块
     interrupt::init();
 
     unsafe {
         llvm_asm!("ebreak"::::"volatile");
     };
-
-    unreachable!();
-
-//    panic!("rust_main END");
-
+    // 2021-3-10
+    //  unreachable!();
+      loop{}
+    // 2021-3-10
+    // 时钟中断需要在loop中进行
+    // !【】Rust使用的是代数类型系统，!表示最小的类型单元，类似离散数学里的零元
+    // 因此没有unreachable()!与之对应不能使用
+    //  panic!("rust_main END");
 }
 
 

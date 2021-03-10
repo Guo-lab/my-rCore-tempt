@@ -57,4 +57,9 @@ pub fn shutdown() -> ! {
 }
 //
 //
+//
+// 设置下一次时钟中断时间 (interrupt/timer.rs)
+pub fn set_timer(time: usize) {
+    sbi_call(SBI_SET_TIMER, time, 0, 0);
+}
 
