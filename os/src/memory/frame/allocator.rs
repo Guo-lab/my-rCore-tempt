@@ -5,8 +5,8 @@
 // 有关具体算法 用名为 Allocator 的 Rust trait 封装起来 /algorithm/src/allocator/mod.rs
 // 2021-3-12
 
-// ?! super 2021-3-12
-use super::*;
+// super 2021-3-12.
+// use super::*;
 use crate::memory::*;
 // 用到了 algorithm
 // after cargo new --lib algorithm
