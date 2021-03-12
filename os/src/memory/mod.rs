@@ -6,11 +6,20 @@
 // 所以在模块范围内不提示「未使用的函数」等警告
 #![allow(dead_code)]
 
+
+
+// 2021-3-10
 pub mod config;
 pub mod heap;
+// 2021-3-11
+pub mod address;
+
 
 pub use {
+// 2021-3-10
     config::*,
+// 2021-3-12
+    address::*,
 };
 
 /// 初始化内存相关的子模块
@@ -20,3 +29,5 @@ pub fn init() {
     heap::init();
     println!("mod memory initialized");
 }
+
+// END

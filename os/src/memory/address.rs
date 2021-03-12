@@ -108,6 +108,8 @@ macro_rules! implement_usize_operations {
         }
     };
 }
-///
-/// 代入地址类型
+//
+// 代入地址类型
+/* /// 代入地址类型
+        | ^^^^^^^^^^^^^^^^ rustdoc does not generate documentation for macro invocations */
 implement_usize_operations! {PhysicalAddress}

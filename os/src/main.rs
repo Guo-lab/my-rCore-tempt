@@ -42,16 +42,27 @@ mod memory;
 extern crate alloc;
 //
 
+
+
+
+
+
     /* ***********************************************************************
 src[]fn main() {
         println!("Hello, Guo!");
      }
     *********************************************************************** */
 
+
+
+
     // ***********************************************************************
     // 汇编语言编写的程序入口
 global_asm!(include_str!("entry.asm"));
     // ***********************************************************************
+
+
+
 
 
 
@@ -65,7 +76,6 @@ global_asm!(include_str!("entry.asm"));
     fn panic(_info: &PanicInfo) -> !{
         loop{}
     }
-
     // ***********************************************************************
     // Make a test function to print on the screen
     // 在屏幕上输出一个字符，目前我们先不用了解其实现原理
@@ -118,14 +128,16 @@ pub extern "C" fn rust_main() -> ! {
    
 
 
- 
     println!("Hello Guo-lab!");
     //  初始化各种模块
     interrupt::init();
     memory::init();
 
+
+
+
 // 测试动态内存分配
-    use alloc::boxed::Box;
+/*  use alloc::boxed::Box;
     use alloc::vec::Vec;
     let v = Box::new(5);
     assert_eq!(*v, 5);
@@ -140,7 +152,7 @@ pub extern "C" fn rust_main() -> ! {
         assert_eq!(value,i);
     }
     println!("Heap Test Passed!");
-    panic!();
+    panic!(); */
 // 测试动态内存分配结束
 
 // 测试中断
@@ -160,9 +172,20 @@ pub extern "C" fn rust_main() -> ! {
     // ********************************************************************
     // 
 // 测试结束
-    //  panic!("rust_main END");
+   
+
+// 测试 KNERNEL_ADDRESS
+// 注意这里的KERNEL_END_ADDRESS 为 ref 类型，需要加 *
+    println!("{}", *memory::config::KERNEL_END_ADDRESS);
+    panic!()
+// 测试结束
 
 
+
+
+
+
+//  panic!("rust_main END");
 // All is over here
 }
 
