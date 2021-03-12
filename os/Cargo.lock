@@ -12,6 +12,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "algorithm"
+version = "0.1.0"
+dependencies = [
+ "bit_field",
+]
+
+[[package]]
 name = "bare-metal"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -66,6 +73,8 @@ checksum = "af8b08b04175473088b46763e51ee54da5f9a164bc162f615b91bc179dbf15a3"
 name = "os"
 version = "0.1.0"
 dependencies = [
+ "algorithm",
+ "bit_field",
  "buddy_system_allocator",
  "lazy_static",
  "riscv",

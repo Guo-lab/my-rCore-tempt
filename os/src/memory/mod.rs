@@ -13,6 +13,9 @@ pub mod config;
 pub mod heap;
 // 2021-3-11
 pub mod address;
+// 2021-3-12
+// mod frame; //  ^^^^^ private module
+pub mod frame;
 
 
 pub use {
@@ -20,6 +23,8 @@ pub use {
     config::*,
 // 2021-3-12
     address::*,
+// 2021-3-12
+    frame::FRAME_ALLOCATOR,
 };
 
 /// 初始化内存相关的子模块

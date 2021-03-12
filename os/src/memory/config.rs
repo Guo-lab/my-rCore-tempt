@@ -6,10 +6,18 @@ pub const KERNEL_HEAP_SIZE: usize = 0x80_0000;
 
 
 
+
+
+
+
 // 2021-3-11
 use super::address::*;
 // 2021-3-12 recognize that have to give dependencies in cargo.toml
 use lazy_static::*;
+
+
+
+
 
 // 2021-3-11
 //  *************************************************
@@ -21,6 +29,10 @@ lazy_static! {
 }
 // *****************************************************************************************
 
+
+
+
+
 // 2021-3-11
 // ****************************************
 extern "C" {
@@ -29,3 +41,21 @@ extern "C" {
     /// 作为变量存在 [`KERNEL_END_ADDRESS`]
     fn kernel_end();
 }
+
+
+
+/// 2021-3-12
+/// 页/帧大小 2^n
+pub const PAGE_SIZE: usize = 4096;
+/// 可访问的内存区域起始地址
+pub const MEMORY_START_ADDRESS: PhysicalAddress = PhysicalAddress(0x8000_0000);
+/// 可访问的内存区域结束地址
+pub const MEMORY_END_ADDRESS: PhysicalAddress = PhysicalAddress(0x8800_0000);
+
+
+
+
+
+
+
+

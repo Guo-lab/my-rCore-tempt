@@ -25,8 +25,17 @@ panic = "abort"
 [dependencies]
 # interrupt/Context 时添加依赖
 riscv = { git = "https://github.com/rcore-os/riscv", features = ["inline-asm"] }
+
 # 动态分配内存时添加
-spin = "0.5.2"
 buddy_system_allocator = "0.7.0"
+
 # lazy_static! 的引用 2021-3-12
 lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
+
+# segment_tree 2021-3-12
+bit_field = "0.10.0"
+# spin::Mutex<T> 
+spin = "0.5.2"
+# a long time to check this out
+# create it by self
+algorithm = { path = 'src/algorithm' }

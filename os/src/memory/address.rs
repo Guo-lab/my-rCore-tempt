@@ -13,6 +13,9 @@
 //! ### 虚拟 ↔ 物理
 //! - **只能用于线性映射**，可以使用 `from` 或 `into` 来转换
 
+
+
+
 //! *******************************************************
 //! ### 物理地址 `PhysicalAddress`
 //! ```rust
@@ -21,7 +24,32 @@
 //! /// 得到其页内偏移，即低 12 位
 //! pub fn page_offset(self) -> usize { ... }
 //! ```
+//! .......................................................
+//! ### 虚拟地址 `VirtualAddress`
+//! ```rust
+//! /// 通过地址得到任何类型变量的引用。没有类型检查所以要格外注意
+//! pub fn deref<T>(self) -> &'static mut T { ... }
+//! /// 得到其页内偏移，即低 12 位
+//! pub fn page_offset(self) -> usize { ... }
+//! ```
+//! .......................................................
+//! ### 虚拟页号 `VirtualPageNumber`
+//! ```rust
+//! /// 通过地址得到页面所对应的一段内存
+//! pub fn deref(self) -> &'static mut [u8; PAGE_SIZE] { ... }
+//! /// 得到一至三级页号
+//! pub fn levels(self) -> [usize; 3] { ... }
+//! ```
+//! .......................................................
+//! ### 物理页号 `PhysicalPageNumber`
+//! ```rust
+//! /// 按照内核线性映射后得到页面对应的一段内存
+//! pub fn deref_kernel(self) -> &'static mut [u8; PAGE_SIZE] { ... }
+//! ```
 //! ********************************************************
+
+
+
 //! # 基本运算-地址
 //! ********************************************************
 //! - 四种类型都可以直接与 `usize` 进行加减，返回结果为原本类型
@@ -29,11 +57,42 @@
 //! ********************************************************
 
 
-
+// 2021-3-11
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct PhysicalAddress(pub usize);
 // *************************************************************************
+
+
+// 2021-3-12 为了后面方便 余下三种类型地址一并实现
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub struct PhysicalPageNumber(pub usize);
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub struct VirtualAddress(pub usize);
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub struct VirtualPageNumber(pub usize);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //
 //
@@ -108,8 +167,16 @@ macro_rules! implement_usize_operations {
         }
     };
 }
+
+
+
 //
 // 代入地址类型
 /* /// 代入地址类型
-        | ^^^^^^^^^^^^^^^^ rustdoc does not generate documentation for macro invocations */
+ERROR: ^^^^^^^^^^^^^^^^ rustdoc does not generate documentation for macro invocations */
+
 implement_usize_operations! {PhysicalAddress}
+// 2021-3-12
+implement_usize_operations! {VirtualAddress}
+implement_usize_operations! {PhysicalPageNumber}
+implement_usize_operations! {VirtualPageNumber}

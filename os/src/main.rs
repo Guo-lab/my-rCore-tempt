@@ -113,7 +113,11 @@ pub fn console_putchar(ch: u8) {
     // ***********************************************************************
     //
     //
-    //    
+
+
+
+
+    // ***********************************************************************
     // Rust entry function
     // _start进行了一系列准备后，这是第一个被调用的rust函数
     //
@@ -155,6 +159,7 @@ pub extern "C" fn rust_main() -> ! {
     panic!(); */
 // 测试动态内存分配结束
 
+
 // 测试中断
 //    unsafe {
 //        llvm_asm!("ebreak"::::"volatile");
@@ -167,20 +172,37 @@ pub extern "C" fn rust_main() -> ! {
     // #################
     // 2021-3-10
     // 时钟中断需要在loop中进行
-    // !【】Rust使用的是代数类型系统，!表示最小的类型单元，类似离散数学里的零元
+    //   [ Rust使用的是代数类型系统，!表示最小的类型单元，类似离散数学里的零元
     // 因此没有unreachable()!与之对应不能使用
     // ********************************************************************
     // 
 // 测试结束
    
 
-// 测试 KNERNEL_ADDRESS
+
+/* 测试 KNERNEL_ADDRESS 2021-3-11
 // 注意这里的KERNEL_END_ADDRESS 为 ref 类型，需要加 *
     println!("{}", *memory::config::KERNEL_END_ADDRESS);
     panic!()
-// 测试结束
+// 测试结束 */
 
 
+
+// TEST  frame_Tracker ALLOCATOR  2021-3-12
+    // PhysicalPage Allocate
+    for _ in 0..2 {
+        let frame0_ = match memory::frame::FRAME_ALLOCATOR.lock().alloc() {
+            Result::Ok(frame_tracker) => frame_tracker,
+            Result::Err(err) => panic!("{}",err)
+        };
+        let frame1_ = match memory::frame::FRAME_ALLOCATOR.lock().alloc() {
+            Result::Ok(frame_tracker) => frame_tracker,
+            Result::Err(err) => panic!("{}",err)
+        };
+        println!("{} and {}", frame0_.address(), frame1_.address());
+    }
+    panic!("Successfully finish frame")
+// TEST DONE
 
 
 
