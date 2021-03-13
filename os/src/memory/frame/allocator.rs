@@ -6,7 +6,9 @@
 // 2021-3-12
 
 // super 2021-3-12.
-// use super::*;
+ /* when considering use crate::memory::frame::FrameTracker;*/
+ use super::*;
+ // 2021-3-12
 use crate::memory::*;
 // 用到了 algorithm
 // after cargo new --lib algorithm
@@ -64,7 +66,6 @@ impl<T: Allocator> FrameAllocator<T> {
     }
     // 将被释放的帧添加到空闲列表的尾部
     // 这个函数会在 [`FrameTracker`] 被 drop 时自动调用，不应在其他地方调用
-    // 使用了 super
     pub(super) fn dealloc(&mut self, frame: &FrameTracker) {
         self.allocator.dealloc(frame.page_number() - self.start_ppn);
     }

@@ -81,6 +81,70 @@ pub struct VirtualPageNumber(pub usize);
 
 
 
+use super::config::PAGE_SIZE;
+
+
+
+
+
+
+
+
+
+// 2021-3-13
+// 以下是一大堆类型的相互转换、各种琐碎操作
+
+impl PhysicalAddress {
+    // 2021-3-13 为完成物理地址页框，此时未涉及虚拟地址映射和转换！
+    /// 取得页内偏移
+    pub fn page_offset(&self) -> usize {
+        self.0 % PAGE_SIZE
+    }
+}
+
+
+// 2021-3-13
+// 转换页框号，Frame 的完成
+macro_rules! implement_address_to_page_number {
+    // 这里面的类型转换实现 [`From`] trait，会自动实现相反的 [`Into`] trait
+    ($address_type: ty, $page_number_type: ty) => {
+        impl From<$page_number_type> for $address_type {
+            /// 从页号转换为地址
+            fn from(page_number: $page_number_type) -> Self {
+                Self(page_number.0 * PAGE_SIZE)
+            }
+        }
+        impl From<$address_type> for $page_number_type {
+            /// 从地址转换为页号，直接进行移位操作
+            ///
+            /// 不允许转换没有对齐的地址，这种情况应当使用 `floor()` 和 `ceil()`
+            fn from(address: $address_type) -> Self {
+                assert!(address.0 % PAGE_SIZE == 0);
+                Self(address.0 / PAGE_SIZE)
+            }
+        }
+        impl $page_number_type {
+            /// 将地址转换为页号，向下取整
+            pub const fn floor(address: $address_type) -> Self {
+                Self(address.0 / PAGE_SIZE)
+            }
+            /// 将地址转换为页号，向上取整
+            pub const fn ceil(address: $address_type) -> Self {
+                Self(address.0 / PAGE_SIZE + (address.0 % PAGE_SIZE != 0) as usize)
+            }
+        }
+    };
+}
+implement_address_to_page_number! {PhysicalAddress, PhysicalPageNumber}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -103,7 +167,7 @@ pub struct VirtualPageNumber(pub usize);
 /// 为各种仅包含一个 usize 的类型实现运算操作
 macro_rules! implement_usize_operations {
     ($type_name: ty) => {
-/// ***************************************************
+	/// ***************************************************
         /// `+`
         impl core::ops::Add<usize> for $type_name {
             type Output = Self;
@@ -125,7 +189,7 @@ macro_rules! implement_usize_operations {
                 self.0 - other.0
             }
         }   
-/// *****************************************************
+	/// *****************************************************
         /// `+=`
         impl core::ops::AddAssign<usize> for $type_name {
             fn add_assign(&mut self, rhs: usize) {
@@ -138,7 +202,7 @@ macro_rules! implement_usize_operations {
                 self.0 -= rhs;
             }
         }
-/// *****************************************************
+	/// *****************************************************
         /// 和 usize 相互转换
         impl From<usize> for $type_name {
             fn from(value: usize) -> Self {
@@ -151,14 +215,14 @@ macro_rules! implement_usize_operations {
                 value.0
             }
         }
-/// *****************************************************
+        /// *****************************************************
         /// 是否有效（0 为无效）
         impl $type_name {   
             pub fn valid(&self) -> bool {
                 self.0 != 0
             }
         }
-/// *****************************************************
+        /// *****************************************************
         /// {} 输出
         impl core::fmt::Display for $type_name {
             fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {

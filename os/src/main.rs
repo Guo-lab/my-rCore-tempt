@@ -202,6 +202,14 @@ pub extern "C" fn rust_main() -> ! {
         println!("{} and {}", frame0_.address(), frame1_.address());
     }
     panic!("Successfully finish frame")
+    /*  Hello Guo-lab!
+        mod interrupt initialized
+	mod memory initialized
+	PhysicalAddress(0x80a1e000) and PhysicalAddress(0x80a1f000)
+	PhysicalAddress(0x80a1e000) and PhysicalAddress(0x80a1f000)
+        # 自动析构回收下次分配同样的地址
+	panic: 'Successfully finish frame'
+    */
 // TEST DONE
 
 

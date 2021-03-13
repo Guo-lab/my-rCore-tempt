@@ -18,8 +18,12 @@
 /// 就在外面再套一层 [`Arc`](alloc::sync::Arc) 就好
 pub struct FrameTracker(pub(super) PhysicalPageNumber);
 
+
 // 2021-3-12
 use crate::memory::{address::*, FRAME_ALLOCATOR};
+
+
+
 
 //
 // 2021-3-12  实现 FrameTracker 这个结构
@@ -44,3 +48,7 @@ impl Drop for FrameTracker {
         FRAME_ALLOCATOR.lock().dealloc(self);
     }
 }
+
+
+
+

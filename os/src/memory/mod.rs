@@ -8,6 +8,20 @@
 
 
 
+
+
+// 2021-3-12
+/// 一个缩写，模块中一些函数会使用
+pub type MemoryResult<T> = Result<T, &'static str>;
+/* Example
+  src/memory/frame/allocator.rs:58:45
+     |
+  58 |     pub fn alloc(&mut self) -> MemoryResult<FrameTracker> {
+*/
+
+
+
+
 // 2021-3-10
 pub mod config;
 pub mod heap;
@@ -16,7 +30,7 @@ pub mod address;
 // 2021-3-12
 // mod frame; //  ^^^^^ private module
 pub mod frame;
-
+pub mod range;
 
 pub use {
 // 2021-3-10
@@ -25,6 +39,7 @@ pub use {
     address::*,
 // 2021-3-12
     frame::FRAME_ALLOCATOR,
+    range::Range,
 };
 
 /// 初始化内存相关的子模块
