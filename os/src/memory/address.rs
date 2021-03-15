@@ -202,39 +202,6 @@ impl VirtualPageNumber {
 }
 
 
-// ...............................................................
-/*--> src/memory/mapping/segment.rs:44:55
-   |
-44 |             MapType::Linear => Some(self.page_range().into().iter()), 
-   |                                     ------------------^^^^--
-   |                                     |                 |
-   |                                     |                 cannot infer type for type parameter `T` declared on the trait `Into`
-   |                                     this method call resolves to `T`
-   |
-   = note: type must be known at this point
-*/
-/*// 从指针转换为虚拟地址
-impl<T> From<*const T> for VirtualAddress {
-    fn from(pointer: *const T) -> Self {
-        Self(pointer as usize)
-    }
-}
-/// 从指针转换为虚拟地址
-impl<T> From<*mut T> for VirtualAddress {
-    fn from(pointer: *mut T) -> Self {
-        Self(pointer as usize)
-    }
-}
-
-
-*/
-
-
-
-
-
-
-
 
 
 
