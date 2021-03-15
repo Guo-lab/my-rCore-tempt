@@ -57,6 +57,14 @@
 //! ********************************************************
 
 
+
+
+
+
+
+
+
+
 // 2021-3-11
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -81,8 +89,10 @@ pub struct VirtualPageNumber(pub usize);
 
 
 
-use super::config::PAGE_SIZE;
-
+// use super::config::PAGE_SIZE; // only for lab 2 with PhysicalAddress And Frame
+// 2021-3-15 
+// Add VirtualAddress mapping
+use super::config::{KERNEL_MAP_OFFSET, PAGE_SIZE}; 
 
 
 
@@ -101,6 +111,41 @@ impl PhysicalAddress {
         self.0 % PAGE_SIZE
     }
 }
+
+
+// 2021-3-15 VirtualAddress 封装
+impl VirtualAddress {
+    /// 从虚拟地址取得某类型的 &mut 引用
+    pub fn deref<T>(self) -> &'static mut T {
+        unsafe { &mut *(self.0 as *mut T) }
+    }
+    /// 取得页内偏移
+    pub fn page_offset(&self) -> usize {
+        self.0 % PAGE_SIZE
+    }
+}
+
+// ************************************************************
+// 2021-3-15 and solve the problem in the frame/allocator.rs
+/// 虚实地址之间的线性映射
+impl From<PhysicalAddress> for VirtualAddress {
+    fn from(pa: PhysicalAddress) -> Self {
+        Self(pa.0 + KERNEL_MAP_OFFSET)
+    }
+}
+/// 虚实地址之间的线性映射
+impl From<VirtualAddress> for PhysicalAddress {
+    fn from(va: VirtualAddress) -> Self {
+        Self(va.0 - KERNEL_MAP_OFFSET)
+    }
+}
+
+
+
+
+
+
+
 
 
 // 2021-3-13
@@ -136,8 +181,8 @@ macro_rules! implement_address_to_page_number {
     };
 }
 implement_address_to_page_number! {PhysicalAddress, PhysicalPageNumber}
-
-
+// 2021-3-15
+//implement_address_to_page_number! {VirtualAddress, VirtualPageNumber}
 
 
 
