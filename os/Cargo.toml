@@ -39,3 +39,9 @@ spin = "0.5.2"
 # a long time to check this out
 # create it by self
 algorithm = { path = 'src/algorithm' }
+
+
+# 2021-3-15 to get bit-operate crate
+# actually bit_field used here
+bitflags = "1.2.1"
+# bit_field = "0.10.0"

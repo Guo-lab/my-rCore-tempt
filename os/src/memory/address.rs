@@ -94,7 +94,9 @@ pub struct VirtualPageNumber(pub usize);
 // Add VirtualAddress mapping
 use super::config::{KERNEL_MAP_OFFSET, PAGE_SIZE}; 
 
-
+// 2021-3-15
+// for VirtualPageNumber VPN
+use bit_field::BitField;
 
 
 
@@ -140,6 +142,20 @@ impl From<VirtualAddress> for PhysicalAddress {
     }
 }
 
+// ************************************************************
+
+// 2021-3-15 after having bit-oper crate 
+// 构建通过虚拟页号获得三级VPN的函数
+impl VirtualPageNumber {
+    /// 得到一、二、三级页号
+    pub fn levels(self) -> [usize; 3] {
+        [
+            self.0.get_bits(18..27),
+            self.0.get_bits(9..18),
+            self.0.get_bits(0..9),
+        ]
+    }
+}
 
 
 
