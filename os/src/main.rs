@@ -28,7 +28,6 @@
 
 
 
-
 //  // ***********************************************************************
 #[macro_use]
 mod console;
@@ -40,7 +39,8 @@ mod interrupt;
 // 内存模块的引入 还需 memory/mod.rs 支持
 mod memory;
 extern crate alloc;
-//
+
+// remap 2021-3-15
 
 
 
@@ -139,6 +139,27 @@ pub extern "C" fn rust_main() -> ! {
 
 
 
+// 测试中断
+//    unsafe {
+//        llvm_asm!("ebreak"::::"volatile");
+//    };
+    // *******************************************************************
+    // 2021-3-10 __tick__ (一处修改：上下文处context 添加mut FILE interrupt）
+    // // unreachable!();
+    // #################
+    // loop{}
+    // #################
+    // 2021-3-10
+    // 时钟中断需要在loop中进行
+    //   [ Rust使用的是代数类型系统，!表示最小的类型单元，类似离散数学里的零元
+    // 因此没有unreachable()!与之对应不能使用
+    // ********************************************************************
+    // 
+// 测试结束
+   
+
+
+
 
 // 测试动态内存分配
 /*  use alloc::boxed::Box;
@@ -160,24 +181,7 @@ pub extern "C" fn rust_main() -> ! {
 // 测试动态内存分配结束
 
 
-// 测试中断
-//    unsafe {
-//        llvm_asm!("ebreak"::::"volatile");
-//    };
-    // *******************************************************************
-    // 2021-3-10 __tick__ (一处修改：上下文处context 添加mut FILE interrupt）
-    // // unreachable!();
-    // #################
-    // loop{}
-    // #################
-    // 2021-3-10
-    // 时钟中断需要在loop中进行
-    //   [ Rust使用的是代数类型系统，!表示最小的类型单元，类似离散数学里的零元
-    // 因此没有unreachable()!与之对应不能使用
-    // ********************************************************************
-    // 
-// 测试结束
-   
+
 
 
 /* 测试 KNERNEL_ADDRESS 2021-3-11
@@ -190,7 +194,7 @@ pub extern "C" fn rust_main() -> ! {
 
 // TEST  frame_Tracker ALLOCATOR  2021-3-12
     // PhysicalPage Allocate
-    for _ in 0..2 {
+ /* for _ in 0..2 {
         let frame0_ = match memory::frame::FRAME_ALLOCATOR.lock().alloc() {
             Result::Ok(frame_tracker) => frame_tracker,
             Result::Err(err) => panic!("{}",err)
@@ -202,6 +206,7 @@ pub extern "C" fn rust_main() -> ! {
         println!("{} and {}", frame0_.address(), frame1_.address());
     }
     panic!("Successfully finish frame")
+  */
     /*  Hello Guo-lab!
         mod interrupt initialized
 	mod memory initialized
@@ -212,6 +217,16 @@ pub extern "C" fn rust_main() -> ! {
     */
 // TEST DONE
 
+
+
+// TEST KERNEL 重映射 REMAPPED
+// 2021-3-15
+    let remap = memory::mapping::MemorySet::new_kernel().unwrap();
+    remap.activate();
+    println!("kernel remapped");
+// if not panic will tick    
+panic!()
+// TEST DONE
 
 
 

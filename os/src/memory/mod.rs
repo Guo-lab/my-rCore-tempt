@@ -32,6 +32,14 @@ pub mod address;
 pub mod frame;
 pub mod range;
 
+// 2021-3-15
+// to use pub mod mapping if not mapping.rs
+// I should have mod.rs in mapping
+pub mod mapping;
+
+
+
+
 pub use {
 // 2021-3-10
     config::*,
@@ -41,6 +49,10 @@ pub use {
     frame::FRAME_ALLOCATOR,
     range::Range,
 };
+
+
+
+
 
 /// 初始化内存相关的子模块
 ///

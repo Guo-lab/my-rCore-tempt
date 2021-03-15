@@ -112,8 +112,15 @@ impl PhysicalAddress {
     pub fn page_offset(&self) -> usize {
         self.0 % PAGE_SIZE
     }
+    // 2021-3-15
+    //    --> src/memory/mapping/mapping.rs:54:79
+    //    |
+    // 54 |   let root_table: &mut PageTable = PhysicalAddress::from(self.root_ppn).deref_kernel();
+    /// 从物理地址经过线性映射取得 &mut 引用
+    pub fn deref_kernel<T>(self) -> &'static mut T {
+        VirtualAddress::from(self).deref()
+    }
 }
-
 
 // 2021-3-15 VirtualAddress 封装
 impl VirtualAddress {
@@ -156,6 +163,73 @@ impl VirtualPageNumber {
         ]
     }
 }
+// .............................................................
+// 2021-3-15 A Lot Of Things To DO
+//   --> src/memory/mapping/mapping.rs:100:44
+//     |
+// 100 |   self.map_one(vpn, Some(vpn.into()), segment.flags | Flags::VALID)?;
+//     |                          ^^^^^^^^^^ the trait `From<address::VirtualPageNumber>` is not implemented for `address::PhysicalPageNumber`
+/// 虚实页号之间的线性映射
+impl From<PhysicalPageNumber> for VirtualPageNumber {
+    fn from(ppn: PhysicalPageNumber) -> Self {
+        Self(ppn.0 + KERNEL_MAP_OFFSET / PAGE_SIZE)
+    }
+}
+/// 虚实页号之间的线性映射
+impl From<VirtualPageNumber> for PhysicalPageNumber {
+    fn from(vpn: VirtualPageNumber) -> Self {
+        Self(vpn.0 - KERNEL_MAP_OFFSET / PAGE_SIZE)
+    }
+}
+// ...............................................................
+// 2021-3-15
+//  --> src/memory/frame/frame_tracker.rs:78:28
+//   |
+//78 |  self.page_number().deref_kernel()
+//   |                     ^^^^^^^^^^^^ method not found in `address::PhysicalPageNumber`
+// And Then
+impl PhysicalPageNumber {
+    /// 从物理地址经过线性映射取得页面
+    pub fn deref_kernel(self) -> &'static mut [u8; PAGE_SIZE] {
+        PhysicalAddress::from(self).deref_kernel()
+    }
+}
+impl VirtualPageNumber {
+    /// 从虚拟地址取得页面
+    pub fn deref(self) -> &'static mut [u8; PAGE_SIZE] {
+        VirtualAddress::from(self).deref()
+    }
+}
+
+
+// ...............................................................
+/*--> src/memory/mapping/segment.rs:44:55
+   |
+44 |             MapType::Linear => Some(self.page_range().into().iter()), 
+   |                                     ------------------^^^^--
+   |                                     |                 |
+   |                                     |                 cannot infer type for type parameter `T` declared on the trait `Into`
+   |                                     this method call resolves to `T`
+   |
+   = note: type must be known at this point
+*/
+/*// 从指针转换为虚拟地址
+impl<T> From<*const T> for VirtualAddress {
+    fn from(pointer: *const T) -> Self {
+        Self(pointer as usize)
+    }
+}
+/// 从指针转换为虚拟地址
+impl<T> From<*mut T> for VirtualAddress {
+    fn from(pointer: *mut T) -> Self {
+        Self(pointer as usize)
+    }
+}
+
+
+*/
+
+
 
 
 
@@ -198,7 +272,7 @@ macro_rules! implement_address_to_page_number {
 }
 implement_address_to_page_number! {PhysicalAddress, PhysicalPageNumber}
 // 2021-3-15
-//implement_address_to_page_number! {VirtualAddress, VirtualPageNumber}
+implement_address_to_page_number! {VirtualAddress, VirtualPageNumber}
 
 
 

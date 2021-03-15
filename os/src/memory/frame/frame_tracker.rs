@@ -21,7 +21,7 @@ pub struct FrameTracker(pub(super) PhysicalPageNumber);
 
 // 2021-3-12
 use crate::memory::{address::*, FRAME_ALLOCATOR};
-
+use crate::memory::PAGE_SIZE;
 
 
 
@@ -41,13 +41,57 @@ impl FrameTracker {
 }
 
 
-
 /// 帧在释放时会放回 [`static@FRAME_ALLOCATOR`] 的空闲链表中
 impl Drop for FrameTracker {
     fn drop(&mut self) {
         FRAME_ALLOCATOR.lock().dealloc(self);
     }
 }
+
+
+
+
+
+
+
+
+
+// 2021-3-15 when dereference
+/*
+error[E0614]: type `frame_tracker::FrameTracker` cannot be dereferenced
+   --> src/memory/mapping/mapping.rs:143:21
+    |
+143 |                     (*frame).copy_from_slice(&page_data);
+    |                     ^^^^^^^^
+*/
+// So .......
+/// `FrameTracker` 可以 deref 得到对应的 `[u8; PAGE_SIZE]`
+impl core::ops::Deref for FrameTracker {
+    type Target = [u8; PAGE_SIZE];
+    fn deref(&self) -> &Self::Target {
+        self.page_number().deref_kernel()
+    }
+}
+
+/// `FrameTracker` 可以 deref 得到对应的 `[u8; PAGE_SIZE]`
+impl core::ops::DerefMut for FrameTracker {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.page_number().deref_kernel()
+    }
+}
+
+// And Then
+//  --> src/memory/frame/frame_tracker.rs:78:28
+//   |
+//78 |  self.page_number().deref_kernel()
+//   |                     ^^^^^^^^^^^^ method not found in `address::PhysicalPageNumber`
+// So enter /memory/address.rs
+
+
+
+
+
+// END
 
 
 

@@ -52,6 +52,31 @@ impl<T: From<usize> + Into<usize> + Copy> Range<T> {
     pub fn contains(&self, value: T) -> bool {
         self.start.into() <= value.into() && value.into() < self.end.into()
     }
+
+
+
+    // 2021-3-15
+/*--> src/memory/mapping/segment.rs:44:55
+   |
+44 |             MapType::Linear => Some(self.page_range().into().iter()), 
+   |                                     ------------------^^^^--
+   |                                     |                 |
+   |                                     |                 cannot infer type for type parameter `T` declared on the trait `Into`
+   |                                     this method call resolves to `T`
+   |
+   = note: type must be known at this point
+*/
+    /// 支持物理 / 虚拟页面区间互相转换
+    pub fn into<U: From<usize> + Into<usize> + Copy + From<T>>(self) -> Range<U> {
+        Range::<U> {
+            start: U::from(self.start),
+            end: U::from(self.end),
+        }
+    }
+
+
+
+
 }
 
 

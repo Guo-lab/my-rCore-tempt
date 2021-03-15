@@ -64,5 +64,44 @@ impl PageTableTracker {
 
 
 
+// 2021-3-15 remap:
+//  --> src/memory/mapping/mapping.rs:68:32
+//   |
+//68 |   entry = &mut entry.get_next_table().entries[*vpn_slice];
+//   |                      ^^^^^^^^^^^^^^ method not found in `&mut page_table_entry::PageTableEntry`
+// 因为 PageTableEntry 和具体的 PageTable 之间没有生命周期关联，所以返回 'static 引用方便写代码
+impl PageTableEntry {
+    pub fn get_next_table(&self) -> &'static mut PageTable {
+        self.address().deref_kernel()
+    }
+}
+
+
+
+
+
+// 2021-3-15 remap:
+//47 | pub struct PageTableTracker(pub FrameTracker);
+//   | ---------------------------------------------- method `zero_init` not found for this
+//...
+//54 |  page_table.zero_init();
+//   |             ^^^^^^^^^ method not found in `PageTableTracker`
+// ........................................................................
+// PageTableEntry 和 PageTableTracker 都可以 deref 到对应的 PageTable
+// （使用线性映射来访问相应的物理地址）
+impl core::ops::Deref for PageTableTracker {
+    type Target = PageTable;
+    fn deref(&self) -> &Self::Target {
+        self.0.address().deref_kernel()
+    }
+}
+
+impl core::ops::DerefMut for PageTableTracker {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.0.address().deref_kernel()
+    }
+}
+
+
 
 // END
