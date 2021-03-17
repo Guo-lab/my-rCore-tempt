@@ -158,19 +158,6 @@ impl Mapping {
         Ok(())
     }
 
-   /* // <四--下>
-    /// 移除一段映射
-    pub fn unmap(&mut self, segment: &Segment) {
-        for vpn in segment.page_range().iter() {
-            let entry = self.find_entry(vpn).unwrap();
-            assert!(!entry.is_empty());
-            // 从页表中清除项
-            entry.clear();
-        }
-        // 移除相应的页面
-        self.mapped_pairs.retain(|(vpn, _)| !segment.page_range().contains(*vpn))
-    }*/
-
     // <五> 一个函数实现页表的激活 ， satp 寄存器更新到TLB
     /// 将当前的映射加载到 `satp` 寄存器并记录
     pub fn activate(&self) {
@@ -183,8 +170,23 @@ impl Mapping {
             llvm_asm!("sfence.vma" :::: "volatile");
         }
     }
+
+    // 2021-3-17
     // <六>
-   /* /// 查找虚拟地址对应的物理地址
+    /// 移除一段映射
+    pub fn unmap(&mut self, segment: &Segment) {
+        for vpn in segment.page_range().iter() {
+            let entry = self.find_entry(vpn).unwrap();
+            assert!(!entry.is_empty());
+            // 从页表中清除项
+            entry.clear();
+        }
+        // 移除相应的页面
+        self.mapped_pairs.retain(|(vpn, _)| !segment.page_range().contains(*vpn))
+    }
+
+    // 2021-3-17
+    /// 查找虚拟地址对应的物理地址
     pub fn lookup(va: VirtualAddress) -> Option<PhysicalAddress> {
         let mut current_ppn;
         unsafe {
@@ -212,7 +214,7 @@ impl Mapping {
         let base = PhysicalAddress::from(entry.page_number()).0;
         let offset = va.0 & ((1 << length) - 1);
         Some(PhysicalAddress(base + offset))
-    }*/
+    }
 
 }
 
